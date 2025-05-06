@@ -1,0 +1,292 @@
+/*
+
+ INTRO
+
+Relational database - include tables , structured
+	Store data in rows and columns
+	Transactional application
+Non relational - not structured 
+	Nosql (not only sql)
+	Graphs, documents, etc
+
+Query request data from database
+Create (create, Insert into)
+Read (select)
+Update (update)
+Delete (delete)
+
+Databases stored locally or in server (on prem or cloud )
+Local computers used during testing or for personal use
+
+
+Fact tables contain core data for constituents
+Dimension tables describe attributes of the data (ie donations, degrees)
+	Typically have less rows
+	Filtering and grouping sets of data
+
+
+
+Syntax difference between 
+Sqllite and postgress
+
+
+
+Basic keywords
+Select  - identifies the columns or data from database
+From - identifies the table we are connecting to
+(*) - special command to select all columns
+Limit - query only allows certain amount of rows
+Make sure it is the last statement in query
+Distinct - follows select to ensure only distinct entities are returned
+Count - housed inside select statement
+Where - cases we want to filter out particular data
+Where job_title = ‘data analyst’
+Single quotes not double
+Comments
+– 2 dashes comments out single line of text
+/*    text    */
+For sections of notes OR xing out insufficient code
+Order by
+Sorts the rows by column
+Always last except for limit statement
+Asc goes highest to lowest
+Defaults to descending (desc)
+
+
+
+CTRL + enter automatically runs query
+I would assume tables are case sensitive 
+	And keywords all caps just for ease
+
+Commas between entities in query
+Put columns on separate lines for sleek look
+	Just indent one tab inside
+(.) operator can be put before column in statement to specify what table
+	Select 
+		Job_posting_fact.job_title
+	From
+		Job_posting_fact
+	Important for combining multiple tables
+
+; at the end of each query
+	Just always do it for best practice
+
+
+
+
+BASIC COMPARISONS 
+
+
+Used within the where or having clause
+Used comparison operators
+= <>(not equal, can also use word not) > < >=, <=
+Used with logical operators
+And, or, between, in
+
+NOT operator used directly after where statement. WHERE NOT
+
+Comma not needed before and operator
+
+Ex salary_year_avg BETWEEN 100 AND 200
+IN operator
+Where job_location IN(‘boston, Ma’, ‘Anywhere’)
+
+
+Wildcards
+Used to sub one or more characters in a string
+Wildcards are used with the LIKE operator
+All of this is used in the where clause
+% represents zero, one, or more characters
+WHERE job_title LIKE ‘%Analyst%’
+Searches before and after analyst
+Returns business, data, etc 
+Can also put % in the middle of words
+_ represents single random characters
+
+
+
+ALIAS
+AS - to rename a column in a table; a temporary name
+Makes column name more readable
+Tack onto the end of each select statement
+CAN ALSO BE USED FOR TABLES
+CAN USE ALIAS THROUGHOUT QUERY
+
+
+Operations
+% (modulus) - returns the remainder of a division operation
+Can be used in all keywords (select, where, order by, group by)
+
+
+AGGREGATION
+Sum, count, average (avg), min, max 
+ 
+Group by dept having count(emp_id) > 10;
+count(DISTINCT column) - unique count of rows that matches specified criteria
+Grouping by job location and selecting average sal will display salary average for each city
+Having - allows us to use an aggregation method to filter by
+Used because you can’t aggregate functions in WHERE
+Comes between group by and order by
+
+
+
+
+1 = true
+
+
+NULL VALUES
+Field w no value
+Differ from field containing “ “
+Used within WHERE OR HAVING clause
+
+
+JOINS (tables)
+Left joins includes circle A (most popular)
+Right join includes circle B
+Inner join includes middle of venn diagram
+Joining 3 tables on a middle table that contains 2 id’s (popular use case)
+Full outer join includes all circles and their intersection
+Including all
+
+Make sure to put in the FROM statement
+Need to specify how we are connecting these tables (ON)
+Usually an id of sorts, foreign key
+ Again this is why putting table names in front of columns is important 
+
+
+Order of execution
+From / join
+Where
+Group by
+Having
+Select
+Distinct
+Order by
+Limit / offset  
+
+
+
+
+
+
+
+
+
+
+
+
+ADVANCED CONCEPTS
+
+Every time i restart the laptop i need to go into postgress folder in file explorer and launch pgadmin4 , go into postgress server and enter password 
+
+
+
+
+DATA TYPES
+
+Int
+varchar(range) - string with specified length
+Text - unlimited len
+Boolean - t/f 1/0, or null
+Timestamp
+Numeric - could have decimals 
+Date
+Timestamp with time zone
+
+MANIPULATE TABLES
+CREATE TABLE
+INSERT INTO
+ALTER TABLE
+ADD
+RENAME COLUMN
+ALTER COLUMN (change datatype of a column)
+DROP COLUMN (delete column)
+DROP TABLE
+
+
+HANDLING DATES
+::DATE - converts to date format by removing the time portion
+:: for converting data type
+AT TIME ZONE - converts timestamp to a specified time zone
+EXTRACT - gets specific date parts (year, month, day)
+Function within the select statement
+Select extract(month from column_name_ as column_month)
+Used in combination with with grouping for larger trend analysis
+
+AT TIME ZONE
+^ Converts timestamps between different time zones
+Can be used without time zone information
+If you don’t have it, you first need to specify time zone and then use the statement again to state which zone you are switching to
+SELECT column_name AT TIME ZONE ‘UTC’ AT TIME ZONE ‘EST’
+Switching utc to est
+
+
+
+
+
+CASE EXPRESSIONS
+
+Similar to if/then statements
+Used in many statements but usually select statements
+
+Select 
+	CASE
+		WHEN col_name = ‘value1 THEN ‘description for val 1’
+		WHEN col_name = ‘value2 THEN ‘description for val 2’
+		ELSE ‘other’
+	END AS column_description
+
+
+SUBQUERIES AN CTEs
+Cte = common table expressions
+Used for organizing and simplifying complex queries
+Helps break down query into smaller, more manageable parts
+Subqueries for simpler queries, ctes for more complex queries
+Begin with with statement before the selection, next query is ran within inside
+
+
+Multiple cte example
+-WITH sales_per_make AS (
+    SELECT car_make,
+         SUM(sales) AS total_sales_per_make
+    FROM cars c
+JOIN car_sales cs
+        ON c.id = cs.cars_id
+GROUP BY car_make
+),
+ 
+sales_sum AS (
+    SELECT SUM(sales) AS total_sales
+    FROM car_sales
+)
+     
+SELECT car_make,
+     total_sales_per_make,
+     total_sales
+FROM sales_per_make, sales_sum ss;
+
+No need for AND just need to coma and set next as  statement 
+
+
+
+UNION operators
+Combine result set of two or more select statements into a single result set
+UNION - remove duplicate rows
+UNION ALL - includes all duplicate rows
+Each SELECT statement within the UNION must have the same number of columns in the result set with similar data types
+Joins used when we want to combine tables that relate on a single value
+This used in instance we want to combine our jan feb and mar tables
+
+
+UNION combines results from 2 or more select statements
+NOT THE INSTANCE I AM LOOKING FOR WITH WORK QUERY
+I want to run filters on the same instance
+I need data that fits both parameters in one table not either parameter in two
+Gets rid of duplicate rows
+
+UNION ALL returns all duplicate rows as well
+
+
+PROJECT SECTION
+
+*/
